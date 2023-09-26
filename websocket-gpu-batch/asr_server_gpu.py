@@ -50,16 +50,22 @@ async def recognize(websocket, path):
             await asyncio.sleep(0.1)
 
         res = rec.Result()
-        if len(res) == 0:
-            await websocket.send('{ "partial" : "" }')
-        else:
-            await websocket.send(res)
+        try:
+            if len(res) == 0:
+                await websocket.send('{ "partial" : "" }')
+            else:
+                await websocket.send(res)
+        except:
+            rec.FinishStream()
 
     while rec.GetPendingChunks() > 0:
         await asyncio.sleep(0.1)
 
     res = rec.Result()
-    await websocket.send(res)
+    try:
+        await websocket.send(res)
+    except:
+        rec.FinishStream()
 
 async def start():
 
